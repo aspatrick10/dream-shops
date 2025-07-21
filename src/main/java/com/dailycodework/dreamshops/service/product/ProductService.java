@@ -2,8 +2,11 @@ package com.dailycodework.dreamshops.service.product;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.dailycodework.dreamshops.dto.ImageDto;
+import com.dailycodework.dreamshops.dto.ProductDto;
 import com.dailycodework.dreamshops.exceptions.ResourceNotFoundException;
 import com.dailycodework.dreamshops.model.Category;
 import com.dailycodework.dreamshops.model.Product;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductService implements IProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public Product addProduct(AddProductRequest product) {
@@ -116,4 +120,24 @@ public class ProductService implements IProductService {
         return productRepository.countByBrandAndName(brand, name);
     }
 
+    // Utility DTO conversion methods
+    @Override
+    public ProductDto toProductDto(Product product) {
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        List<ImageDto> imageDtos = product.getImages().stream()
+                .map(image -> modelMapper.map(image, ImageDto.class)).toList();
+        productDto.setImages(imageDtos);
+        return productDto;
+    }
+
+    @Override
+    public List<ProductDto> toProductDtoList(List<Product> products) {
+        return products.stream().map(this::toProductDto).toList();
+    }
+
+    // Partial match method (case-insensitive)
+    @Override
+    public List<Product> getProductsByNameContainingIgnoreCase(String name) {
+        return productRepository.findByNameContainingIgnoreCase(name);
+    }
 }

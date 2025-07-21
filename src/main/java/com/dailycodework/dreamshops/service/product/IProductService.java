@@ -2,6 +2,7 @@ package com.dailycodework.dreamshops.service.product;
 
 import java.util.List;
 
+import com.dailycodework.dreamshops.dto.ProductDto;
 import com.dailycodework.dreamshops.model.Product;
 import com.dailycodework.dreamshops.request.AddProductRequest;
 import com.dailycodework.dreamshops.request.ProductUpdateRequest;
@@ -17,6 +18,7 @@ public interface IProductService {
 
     List<Product> getAllProducts();
 
+    // Exact match methods
     List<Product> getProductsbyCategory(String category);
 
     List<Product> getProductsByBrand(String brand);
@@ -28,4 +30,12 @@ public interface IProductService {
     List<Product> getProductsByBrandAndName(String brand, String name);
 
     Long countProductsByBrandAndName(String brand, String name);
+
+    // Utility DTO conversion methods
+    ProductDto toProductDto(Product product);
+
+    List<ProductDto> toProductDtoList(List<Product> products);
+
+    // Partial match methods (case-insensitive)
+    List<Product> getProductsByNameContainingIgnoreCase(String name);
 }

@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.prefix}/images")
+@RequestMapping("/api/v1/images")
 public class ImageController {
     private final IImageService imageService;
 
@@ -50,7 +50,7 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/image/download/{imageId}")
+    @GetMapping("/download/{imageId}")
     public ResponseEntity<Resource> downloadImage(@PathVariable Long imageId)
             throws SQLException {
         Image image = imageService.getImageById(imageId);
@@ -63,7 +63,7 @@ public class ImageController {
                 .body(resource);
     }
 
-    @PutMapping("/image/{imageId}/update")
+    @PutMapping("/{imageId}/update")
     public ResponseEntity<ApiResponse> updateImage(@PathVariable Long imageId,
             @RequestBody MultipartFile file) {
         try {
@@ -75,7 +75,7 @@ public class ImageController {
         }
     }
 
-    @DeleteMapping("/image/{imageId}/delete")
+    @DeleteMapping("/{imageId}/delete")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId) {
         try {
             imageService.deleteImageById(imageId);
