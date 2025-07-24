@@ -5,7 +5,6 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.dailycodework.dreamshops.dto.ImageDto;
 import com.dailycodework.dreamshops.dto.ProductDto;
 import com.dailycodework.dreamshops.exceptions.ResourceNotFoundException;
 import com.dailycodework.dreamshops.model.Category;
@@ -123,11 +122,7 @@ public class ProductService implements IProductService {
     // Utility DTO conversion methods
     @Override
     public ProductDto toProductDto(Product product) {
-        ProductDto productDto = modelMapper.map(product, ProductDto.class);
-        List<ImageDto> imageDtos = product.getImages().stream()
-                .map(image -> modelMapper.map(image, ImageDto.class)).toList();
-        productDto.setImages(imageDtos);
-        return productDto;
+        return modelMapper.map(product, ProductDto.class);
     }
 
     @Override
