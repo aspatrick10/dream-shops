@@ -1,6 +1,7 @@
 package com.dailycodework.dreamshops.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,7 @@ public class UserController {
                 .ok(new ApiResponse("User retrieved successfully", userDto));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> createUser(
             @Valid @RequestBody CreateUserRequest request) {
@@ -43,6 +45,7 @@ public class UserController {
                 .ok(new ApiResponse("User created successfully", userDto));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{userId}/update")
     public ResponseEntity<ApiResponse> updateUser(
             @Valid @RequestBody UpdateUserRequest request,
@@ -53,6 +56,7 @@ public class UserController {
                 .ok(new ApiResponse("User updated successfully", userDto));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{userId}/delete")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);

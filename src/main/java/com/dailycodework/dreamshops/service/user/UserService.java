@@ -1,12 +1,17 @@
 package com.dailycodework.dreamshops.service.user;
 
+import java.util.Collections;
+
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.dailycodework.dreamshops.dto.UserDto;
 import com.dailycodework.dreamshops.exceptions.AlreadyExistsException;
 import com.dailycodework.dreamshops.exceptions.ResourceNotFoundException;
+import com.dailycodework.dreamshops.model.Role;
 import com.dailycodework.dreamshops.model.User;
+import com.dailycodework.dreamshops.repository.RoleRepository;
 import com.dailycodework.dreamshops.repository.UserRepository;
 import com.dailycodework.dreamshops.request.CreateUserRequest;
 import com.dailycodework.dreamshops.request.UpdateUserRequest;
@@ -17,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService implements IUserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User getUserById(Long userId) {
@@ -27,18 +34,27 @@ public class UserService implements IUserService {
 
     @Override
     public User createUser(CreateUserRequest user) {
-        if (!userRepository.existsByEmail(user.getEmail())) {
-            User newUser = new User();
-            newUser.setFirstName(user.getFirstName());
-            newUser.setLastName(user.getLastName());
-            newUser.setEmail(user.getEmail());
-            newUser.setPassword(user.getPassword()); // Consider hashing the
-                                                     // password before saving
-            return userRepository.save(newUser);
-        } else {
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new AlreadyExistsException(
                     "User with this email already exists!");
         }
+
+        User newUser = new User();
+        newUser.setFirstName(user.getFirstName());
+        newUser.setLastName(user.getLastName());
+        newUser.setEmail(user.getEmail());
+        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Assign default USER role
+        Role userRole = roleRepository.findByName("ROLE_USER");
+        if (userRole == null) {
+            // Create default role if it doesn't exist
+            userRole = new Role("ROLE_USER");
+            roleRepository.save(userRole);
+        }
+        newUser.setRoles(Collections.singletonList(userRole));
+
+        return userRepository.save(newUser);
     }
 
     @Override
